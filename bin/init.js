@@ -20,7 +20,7 @@ try {
     let question = [{
         type: 'Input',
         name: 'fileName',
-        message: '请输入文件名',
+        message: '请输入文件名(以小驼峰法命名，如：loginIn)',
     }] 
     program.path && question.push({
         type: 'Input',
@@ -30,7 +30,7 @@ try {
     })
     inquirer
         .prompt(question)
-        .then((answers) => {
+        .then((answers) => { // 待添加 文件名输入格式判断处理
             if (answers.swagger == '') {
                 logs(colors.red('请输入文件名'));
             } else {
