@@ -1,7 +1,9 @@
 const PAGE_TEMPLATE_PATH = '../template/pageTemplate.mustache';
 const STYLE_TEMPLATE_PATH = '../template/styleTemplate.mustache';
+const ROUTERTC_TEMPLATE_PATH = '../template/routerConfTemplate.mustache';
 const INDEX_N = 'index.js';
 const STYLE_N = 'style.scss';
+const ROUTERTC_N = 'routerConf.js';
 
 const Colors = require('colors');
 const Log = console.log;
@@ -9,10 +11,10 @@ const fs = require('fs');
 const Mustache = require('mustache');
 const Path = require('path');
 
-// const { resolveApp, parsePath } = require('../config/defaultPaths');
+const { resolveApp } = require('../config/defaultPaths');
 const { existsSync, mkdir } = require('../util/fileService');
 
-function toLine(str) { // 大驼峰转连字符 loginIn -> login-in
+function toLine (str) { // 大驼峰转连字符 loginIn -> login-in
 	var temp = str.replace(/[A-Z]/g, function (match) {	
 		return "-" + match.toLowerCase();
   });
@@ -22,11 +24,11 @@ function toLine(str) { // 大驼峰转连字符 loginIn -> login-in
 	return temp;
 }
 
-function toCamel(str) { // 大驼峰转小驼峰 首字母转为小写
+function toCamel (str) { // 大驼峰转小驼峰 首字母转为小写
   return str[0].toLowerCase() + str.substring(1)
 }
 
-function writerFile(filePath, renderString) {
+function writerFile (filePath, renderString) { // 生成指定文件并填入内容
   fs.writeFile(filePath, renderString, function (err) {
     if (err)
       Log(Colors.red('生成操作失败'));
@@ -35,33 +37,69 @@ function writerFile(filePath, renderString) {
   });
 }
 
-/* 渲染获取字符串 */
-function renderMustache(path, data) {
+function renderMustache (path, data) { // 渲染获取字符串
   let temp = fs.readFileSync(require.resolve(path), "utf-8").toString();
   let renderString = Mustache.render(temp, data);
   return renderString;
 }
 
-module.exports = (compName, compPath) => {
+function parseString (str) {  // 解析文件内已有字符串
+
+}
+
+function mergeRouterCData (path, newData) { // 合并新旧数据
+  const fileData = {};
+  if (existsSync(layoutPath)) {
+    const fileContent = fs.readFileSync(path).toString();
+  } else {
+    fileData = newData
+  }
+  
+}
+
+module.exports = (compName, compPath, url, layoutName) => {
   const folderName = toCamel(compName);  // 文件夹名称
   const className = toLine(compName);  // 类名
-  const folderPath = `${compPath}/${folderName}`;
+  const folderPath = `${resolveApp(compPath)}/${folderName}`;
   const folderExist = existsSync(folderPath); //文件夹是否存在
+
+  let layoutPath = '', layoutExist = true, importPackages = [`import ${compName} from '../../${compPath}${folderName}';`];
+  if (layoutName != 'null') {
+    layoutPath = resolveApp('src/layout');
+    layoutPath = `${layoutPath}/${toCamel(layoutName)}`;
+    layoutExist = existsSync(layoutPath); 
+    importPackages.push(`import ${layoutName} from '../../src/layout/${toCamel(layoutName)}';`)
+  }
+
   if (folderExist) {
     Log(Colors.red(`指定路径下组件已存在，请重新输入组件名`));
+  } else if (!layoutExist) {
+    Log(Colors.red(`布局组件不存在，请重新输入布局组件名`));
   } else {
     // 生成文件
-    mkdir(folderPath);
-    const indexContent = renderMustache(PAGE_TEMPLATE_PATH, {
-      name: compName,
-      className
-    });
-    const styleContent = renderMustache(STYLE_TEMPLATE_PATH, {
-      className
-    });
-    writerFile(Path.join(folderPath, INDEX_N), indexContent);
-    writerFile(Path.join(folderPath, STYLE_N), styleContent);
+    // mkdir(folderPath);
+    // const indexContent = renderMustache(PAGE_TEMPLATE_PATH, {
+    //   name: compName,
+    //   className
+    // });
+    // const styleContent = renderMustache(STYLE_TEMPLATE_PATH, {
+    //   className
+    // });
+    // writerFile(Path.join(folderPath, INDEX_N), indexContent);
+    // writerFile(Path.join(folderPath, STYLE_N), styleContent);
+
     // 配置路由
+    const newConf = {
+      importPackages,
+      confData: {
+        linkPath: url == '' ? `/${className}` : url,
+        layoutName,
+        compName
+      }
+    }
+    const routerCPath = resolveApp(`src/router/${ROUTERTC_N}`)
+    console.log(newConf)
+    // mergeRouterCData(routerCPath,newConf);
     
   }
 }
