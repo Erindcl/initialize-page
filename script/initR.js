@@ -50,6 +50,7 @@ module.exports = (compName, compPath) => {
   if (folderExist) {
     Log(Colors.red(`指定路径下组件已存在，请重新输入组件名`));
   } else {
+    // 生成文件
     mkdir(folderPath);
     const indexContent = renderMustache(PAGE_TEMPLATE_PATH, {
       name: compName,
@@ -60,6 +61,8 @@ module.exports = (compName, compPath) => {
     });
     writerFile(Path.join(folderPath, INDEX_N), indexContent);
     writerFile(Path.join(folderPath, STYLE_N), styleContent);
+    // 配置路由
+    
   }
 }
 

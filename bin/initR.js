@@ -5,7 +5,7 @@ const colors = require('colors');  // 提示有颜色
 const inquirer = require('inquirer');  // 终端文字提示 并获取交互信息
 const { resolveApp } = require('../config/defaultPaths'); // 获取相对路径的绝对路径
 
-const init = require('../script/init.js');
+const init = require('../script/initR.js');
 const logs = console.log;
 program
     .option('-p, --path', '自定义生成目录')
