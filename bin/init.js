@@ -3,14 +3,9 @@
 const program = require('commander');
 const colors = require('colors');  // 提示有颜色
 const inquirer = require('inquirer');  // 终端文字提示 并获取交互信息
+const { resolveApp } = require('../config/defaultPaths'); // 获取相对路径的绝对路径
 
-const { realpathSync } = require('fs');  // node fs模块 提供文件相关操作API
-const appDirectory = realpathSync(process.cwd()); // 获取项目的绝对路径
-function resolveApp(relativePath) {  // 根据相对路径获取绝对路径
-    return resolve(appDirectory, relativePath);
-}
-
-// const init = require('../script/init.js');
+const init = require('../script/init.js');
 const logs = console.log;
 program
     .option('-p, --path', '自定义生成目录')
@@ -19,8 +14,8 @@ program
 try {
     let question = [{
         type: 'Input',
-        name: 'fileName',
-        message: '请输入文件名(以小驼峰法命名，如：loginIn)',
+        name: 'name',
+        message: '请输入组件名(以大驼峰法命名，如：LoginIn)',
     }] 
     program.path && question.push({
         type: 'Input',
@@ -30,14 +25,15 @@ try {
     })
     inquirer
         .prompt(question)
-        .then((answers) => { // 待添加 文件名输入格式判断处理
-            if (answers.swagger == '') {
-                logs(colors.red('请输入文件名'));
+        .then((answers) => { // 待添加 组件名输入格式判断处理
+            if (answers.name == '') {
+                logs(colors.red('请输入组件名'));
             } else {
                 if(!answers.path || answers.path == ''){
-                    answers.path = resolveApp('src/pages/');
+                    answers.path = 'src/pages/';
                 }
-                // init(answers.swagger, answers.path)
+                answers.path = resolveApp(answers.path);
+                init(answers.name, answers.path)
             }
         })
 } catch (err) {
