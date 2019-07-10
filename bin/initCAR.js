@@ -4,7 +4,7 @@ const program = require('commander');
 const colors = require('colors');  // 提示有颜色
 const inquirer = require('inquirer');  // 终端文字提示 并获取交互信息
 
-const initR = require('../script/initCAR.js/index.js');
+const initR = require('../script/initCAR.js');
 const logs = console.log;
 program
     .option('-p, --path', '自定义生成目录')
