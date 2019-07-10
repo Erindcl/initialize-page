@@ -1,13 +1,13 @@
 {{#importPackages}}
-{{.}}
+{{&.}}
 {{/importPackages}}
 
 const routerConf = [
     {{#confData}}
     { 
-        path: '{{linkPath}}',
-        layout: {{layoutName}},
-        component: {{compName}},
+        path: '{{&linkPath}}',
+        layout: {{&layoutName}},
+        component: {{&compName}},
     }, 
     {{/confData}}
 ];

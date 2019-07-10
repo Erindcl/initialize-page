@@ -1,7 +1,7 @@
 import * as React from 'react';
 import  './style.scss';
 
-export default class LogIn extends React.Component {
+export default class SideLayout extends React.Component {
 
   state = {
     
@@ -13,7 +13,7 @@ export default class LogIn extends React.Component {
 
   render(){
     return (
-      <div className="log-in">
+      <div className="side-layout">
         
       </div>
     )

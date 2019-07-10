@@ -12,7 +12,7 @@ const Mustache = require('mustache');
 const Path = require('path');
 
 const { resolveApp } = require('../config/defaultPaths');
-const { existsSync, mkdir } = require('../util/fileService');
+const { existsSync, mkdir, readFileSync } = require('../util/fileService');
 
 function toLine (str) { // 大驼峰转连字符 loginIn -> login-in
 	var temp = str.replace(/[A-Z]/g, function (match) {	
@@ -44,17 +44,56 @@ function renderMustache (path, data) { // 渲染获取字符串
 }
 
 function parseString (str) {  // 解析文件内已有字符串
-
+  let tempArr = str.trim().split('const');
+  let importedPks = tempArr[0].split('\n');
+  importedPks = importedPks.filter((str) => {
+    return str != '';
+  })
+  let oldConfArr = tempArr[1].split('[')[1].split(']')[0].replace(/\s/g,"");
+  let reg = /(?<={).*?(?=})/g;
+  let oldConfData = [];
+  oldConfArr = oldConfArr.match(reg);
+  oldConfArr.forEach(element => {
+    let tempObj = {}, 
+        tempArr = element.split(',').filter((str) => {
+          return str != '';
+        });
+    tempArr.forEach(str => {
+      tempObj[str.split(':')[0]] = str.split(':')[1];
+    })
+    oldConfData.push({
+      linkPath: tempObj.path.split('\'')[1],
+      layoutName: tempObj.layout,
+      compName: tempObj.component,
+    });
+  });
+  return {
+    importPackages: importedPks,
+    confData: oldConfData
+  }
 }
 
 function mergeRouterCData (path, newData) { // 合并新旧数据
-  const fileData = {};
-  if (existsSync(layoutPath)) {
-    const fileContent = fs.readFileSync(path).toString();
+  let fileData = {};
+  if (existsSync(path)) {
+    let fileContent = readFileSync(path);
+    fileContent = parseString(fileContent);
+    // 判断布局文件是否已被导入
+    let isExist = false; 
+    for (let i = 0, length = fileContent.confData.length; i < length; i++) {
+      isExist = fileContent.confData[i].layoutName == newData.confData[0].layoutName ? true : false;
+      if (isExist) {
+        break;
+      }
+    }
+    fileData = {
+      importPackages: isExist ? [ ...fileContent.importPackages, newData.importPackages[0] ] : [ ...fileContent.importPackages, ...newData.importPackages ],
+      confData: [ ...newData.confData, ...fileContent.confData ],
+    }
   } else {
     fileData = newData
   }
-  
+  return fileData;
 }
 
 module.exports = (compName, compPath, url, layoutName) => {
@@ -63,7 +102,9 @@ module.exports = (compName, compPath, url, layoutName) => {
   const folderPath = `${resolveApp(compPath)}/${folderName}`;
   const folderExist = existsSync(folderPath); //文件夹是否存在
 
-  let layoutPath = '', layoutExist = true, importPackages = [`import ${compName} from '../../${compPath}${folderName}';`];
+  let layoutPath = '', 
+      layoutExist = true, 
+      importPackages = [`import ${compName} from '../../${compPath}${folderName}';`];
   if (layoutName != 'null') {
     layoutPath = resolveApp('src/layout');
     layoutPath = `${layoutPath}/${toCamel(layoutName)}`;
@@ -77,30 +118,30 @@ module.exports = (compName, compPath, url, layoutName) => {
     Log(Colors.red(`布局组件不存在，请重新输入布局组件名`));
   } else {
     // 生成文件
-    // mkdir(folderPath);
-    // const indexContent = renderMustache(PAGE_TEMPLATE_PATH, {
-    //   name: compName,
-    //   className
-    // });
-    // const styleContent = renderMustache(STYLE_TEMPLATE_PATH, {
-    //   className
-    // });
-    // writerFile(Path.join(folderPath, INDEX_N), indexContent);
-    // writerFile(Path.join(folderPath, STYLE_N), styleContent);
+    mkdir(folderPath);
+    const indexContent = renderMustache(PAGE_TEMPLATE_PATH, {
+      name: compName,
+      className
+    });
+    const styleContent = renderMustache(STYLE_TEMPLATE_PATH, {
+      className
+    });
+    writerFile(Path.join(folderPath, INDEX_N), indexContent);
+    writerFile(Path.join(folderPath, STYLE_N), styleContent);
 
     // 配置路由
     const newConf = {
       importPackages,
-      confData: {
+      confData: [{
         linkPath: url == '' ? `/${className}` : url,
         layoutName,
         compName
-      }
+      }]
     }
     const routerCPath = resolveApp(`src/router/${ROUTERTC_N}`)
-    console.log(newConf)
-    // mergeRouterCData(routerCPath,newConf);
-    
+    const allRouterConf = mergeRouterCData(routerCPath,newConf);
+    const routerConfContent = renderMustache(ROUTERTC_TEMPLATE_PATH, allRouterConf);
+    writerFile(routerCPath, routerConfContent);
   }
 }
 
