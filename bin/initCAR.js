@@ -7,6 +7,7 @@ const inquirer = require('inquirer');  // 终端文字提示 并获取交互信�
 const initR = require('../script/initCAR.js');
 const logs = console.log;
 program
+    .option('-t, --ts', '使用TS模版')
     .option('-p, --path', '自定义生成目录')
     .option('-u, --url', '自定义访问路径')
     .option('-l, --layout', '自定义布局')
@@ -18,6 +19,12 @@ try {
         name: 'name',
         message: '请输入组件名(以大驼峰法命名，如：UserLogin)',
     }] 
+    program.ts && question.push({
+        type: 'Input',
+        name: 'ts',
+        message: '是否使用TS？(y/n)',
+        default: 'n'
+    })
     program.path && question.push({
         type: 'Input',
         name: 'path',
@@ -43,9 +50,10 @@ try {
                 logs(colors.red('请输入组件名'));
             } else {
                 answers.url = !answers.url || answers.url == '' ? '' : answers.url;
-                answers.layout = !answers.layout || answers.layout == '' ? 'null' : answers.layout;
-                answers.path = !answers.path || answers.path == '' ? 'src/pages/' : answers.path;
-                initR(answers.name, answers.path, answers.url, answers.layout)
+                answers.layout = !answers.layout ? 'null' : answers.layout;
+                answers.path = !answers.path ? 'src/pages/' : answers.path;
+                answers.ts = !answers.ts ? 'n' : answers.ts;
+                initR(answers.name, answers.path, answers.url, answers.layout, answers.ts)
             }
         })
 } catch (err) {

@@ -1,4 +1,5 @@
 const PAGE_TEMPLATE_PATH = '../template/pageTemplate.mustache';
+const PAGE_TS_TEMPLATE_PATH = '../template/pageTemplateTS.mustache';
 const STYLE_TEMPLATE_PATH = '../template/styleTemplate.mustache';
 const ROUTERTC_TEMPLATE_PATH = '../template/routerConfTemplate.mustache';
 const INDEX_N = 'index.js';
@@ -96,7 +97,7 @@ function mergeRouterCData (path, newData) { // 合并新旧数据
   return fileData;
 }
 
-module.exports = (compName, compPath, url, layoutName) => {
+module.exports = (compName, compPath, url, layoutName, isTs) => {
   const folderName = toCamel(compName);  // 文件夹名称
   const className = toLine(compName);  // 类名
   const folderPath = `${resolveApp(compPath)}/${folderName}`;
@@ -119,7 +120,7 @@ module.exports = (compName, compPath, url, layoutName) => {
   } else {
     // 生成文件
     mkdir(folderPath);
-    const indexContent = renderMustache(PAGE_TEMPLATE_PATH, {
+    const indexContent = renderMustache(isTs == 'y' ? PAGE_TS_TEMPLATE_PATH : PAGE_TEMPLATE_PATH, {
       name: compName,
       className
     });

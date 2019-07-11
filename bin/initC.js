@@ -8,6 +8,7 @@ const { resolveApp } = require('../config/defaultPaths'); // 获取相对路径�
 const init = require('../script/initC.js');
 const logs = console.log;
 program
+    .option('-t, --ts', '使用TS模版')
     .option('-p, --path', '自定义生成目录')
     .parse(process.argv);
 
@@ -17,6 +18,12 @@ try {
         name: 'name',
         message: '请输入组件名(以大驼峰法命名，如：LoginIn)',
     }] 
+    program.ts && question.push({
+        type: 'Input',
+        name: 'ts',
+        message: '是否使用TS？(y/n)',
+        default: 'n'
+    })
     program.path && question.push({
         type: 'Input',
         name: 'path',
@@ -33,7 +40,8 @@ try {
                     answers.path = 'src/pages/';
                 }
                 answers.path = resolveApp(answers.path);
-                init(answers.name, answers.path)
+                answers.ts = !answers.ts ? 'n' : answers.ts;
+                init(answers.name, answers.path, answers.ts)
             }
         })
 } catch (err) {
