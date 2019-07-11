@@ -7,10 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "init": "./bin/init.js"
+    "initCAR": "./bin/initCAR.js"
   },
   "keywords": [
-    "init"
+    "initCAR"
   ],
   "author": "zhifei",
   "license": "ISC",
