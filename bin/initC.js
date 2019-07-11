@@ -21,7 +21,7 @@ try {
         type: 'Input',
         name: 'path',
         message: '请输入生成目录(当前项目为根目录,默认为src/pages/)',
-        default: ''
+        default: 'src/pages/'
     })
     inquirer
         .prompt(question)
