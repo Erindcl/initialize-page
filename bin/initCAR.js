@@ -22,7 +22,7 @@ try {
         type: 'Input',
         name: 'path',
         message: '请输入生成目录(当前项目为根目录,默认为src/pages/)',
-        default: ''
+        default: 'src/pages/'
     })
     program.url && question.push({
         type: 'Input',
@@ -34,7 +34,7 @@ try {
         type: 'Input',
         name: 'layout',
         message: '请输入布局组件名(默认为：null)',
-        default: ''
+        default: 'null'
     })
     inquirer
         .prompt(question)
