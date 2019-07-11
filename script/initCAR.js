@@ -44,7 +44,7 @@ function renderMustache (path, data) { // 渲染获取字符串
 }
 
 function parseString (str) {  // 解析文件内已有字符串
-  let tempArr = str.trim().split('const');
+  let tempArr = str.trim().split('const routerConf');
   let importedPks = tempArr[0].split('\n');
   importedPks = importedPks.filter((str) => {
     return str != '';
