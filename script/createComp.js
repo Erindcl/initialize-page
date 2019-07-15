@@ -1,6 +1,7 @@
 const PAGE_TEMPLATE_PATH = '../template/pageTemplate.mustache';
 const PAGE_TS_TEMPLATE_PATH = '../template/pageTemplateTS.mustache';
 const STYLE_TEMPLATE_PATH = '../template/styleTemplate.mustache';
+const INDEX_TS_N = 'index.tsx';
 const INDEX_N = 'index.js';
 const STYLE_N = 'style.scss';
 
@@ -10,7 +11,6 @@ const fs = require('fs');
 const Mustache = require('mustache');
 const Path = require('path');
 
-// const { resolveApp, parsePath } = require('../config/defaultPaths');
 const { existsSync, mkdir } = require('../util/fileService');
 
 function toLine(str) { // 大驼峰转连字符 loginIn -> login-in
@@ -59,7 +59,7 @@ module.exports = (compName, compPath, isTs) => {
     const styleContent = renderMustache(STYLE_TEMPLATE_PATH, {
       className
     });
-    writerFile(Path.join(folderPath, INDEX_N), indexContent);
+    writerFile(Path.join(folderPath, isTs == 'y' ? INDEX_TS_N : INDEX_N), indexContent);
     writerFile(Path.join(folderPath, STYLE_N), styleContent);
   }
 }

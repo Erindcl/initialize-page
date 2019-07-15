@@ -1,10 +1,13 @@
 const PAGE_TEMPLATE_PATH = '../template/pageTemplate.mustache';
-const PAGE_TS_TEMPLATE_PATH = '../template/pageTemplateTS.mustache';
 const STYLE_TEMPLATE_PATH = '../template/styleTemplate.mustache';
 const ROUTERTC_TEMPLATE_PATH = '../template/routerConfTemplate.mustache';
 const INDEX_N = 'index.js';
 const STYLE_N = 'style.scss';
 const ROUTERTC_N = 'routerConf.js';
+
+const ROUTERTC_N_TS = 'routerConf.tsx';
+const INDEX_TS_N = 'index.tsx';
+const PAGE_TS_TEMPLATE_PATH = '../template/pageTemplateTS.mustache';
 
 const Colors = require('colors');
 const Log = console.log;
@@ -127,7 +130,7 @@ module.exports = (compName, compPath, url, layoutName, isTs) => {
     const styleContent = renderMustache(STYLE_TEMPLATE_PATH, {
       className
     });
-    writerFile(Path.join(folderPath, INDEX_N), indexContent);
+    writerFile(Path.join(folderPath, isTs == 'y' ? INDEX_TS_N : INDEX_N), indexContent);
     writerFile(Path.join(folderPath, STYLE_N), styleContent);
 
     // 配置路由
@@ -139,7 +142,7 @@ module.exports = (compName, compPath, url, layoutName, isTs) => {
         compName
       }]
     }
-    const routerCPath = resolveApp(`src/router/${ROUTERTC_N}`)
+    const routerCPath = resolveApp(isTs == 'y' ? `src/router/${ROUTERTC_N_TS}` : `src/router/${ROUTERTC_N}`)
     const allRouterConf = mergeRouterCData(routerCPath,newConf);
     const routerConfContent = renderMustache(ROUTERTC_TEMPLATE_PATH, allRouterConf);
     writerFile(routerCPath, routerConfContent);

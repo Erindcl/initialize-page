@@ -1,5 +1,5 @@
 {
-  "name": "init-page",
+  "name": "create-page",
   "version": "1.0.0",
   "description": "this is cli",
   "main": "index.js",
@@ -7,13 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "initCAR": "./bin/initCAR.js",
-    "initC": "./bin/initC.js"
+    "createPage": "./bin/createPage.js",
+    "createComp": "./bin/createComp.js"
   },
   "keywords": [
-    "initCAR"
+    "createPage",
+    "createComp"
   ],
-  "author": "zhifei",
+  "author": "Erin",
   "license": "ISC",
   "dependencies": {
     "colors": "^1.3.3",
