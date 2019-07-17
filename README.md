@@ -4,8 +4,3 @@
  ```
  npm run install 或 yarn (推荐)
  ```
-
-运行
- ```
- node ./bin/initCAR
- ```
